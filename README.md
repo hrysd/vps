@@ -1,0 +1,3 @@
+# VPS
+
+http://hrysd.org
