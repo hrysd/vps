@@ -1,0 +1,85 @@
+---
+- name: install nginx dependencies
+  apt:
+    name: "{{item}}"
+  with_items:
+    - libpcre3
+    - libpcre3-dev
+    - zlib1g
+    - zlib1g-dev
+    - openssl
+    - libssl-dev
+
+- group:
+    name: "{{group}}"
+
+- user:
+    name:   "{{user}}"
+    group:  "{{group}}"
+    shell:  /bin/false
+    system: yes
+
+- name: Get source of nginx
+  get_url:
+    url: "{{source_url}}"
+    dest: "{{tmp_dir}}.tar.gz"
+
+- name: Unpack nginx source
+  command: tar -xzf {{tmp_dir}}.tar.gz
+  args:
+    chdir:   /tmp
+    creates: "{{tmp_dir}}/README"
+
+# XXX: このままだと毎回 build するんじゃないですかねぇ
+- name: Configure nginx source
+  command: >
+    ./configure
+    --prefix={{source_dir}}
+    --user={{user}}
+    --group={{group}}
+    --pid-path=/var/run/nginx.pid
+    --lock-path=/var/lock/nginx.lock
+    --error-log-path={{log_dir}}/error.log
+    --http-log-path={{log_dir}}/access.log
+    --with-http_realip_module
+    --with-http_gunzip_module
+    --with-http_gzip_static_module
+    --with-http_ssl_module
+  args:
+    chdir: "{{tmp_dir}}"
+
+- name: Build nginx from source
+  shell: make && make install
+  args:
+    chdir: "{{tmp_dir}}"
+
+- name: Create symbolic link
+  file:
+    path:  "{{install_dir}}"
+    src:   "{{source_dir}}"
+    state: link
+    force: yes
+
+- name: Set init script
+  template:
+    src: nginx.init.j2
+    dest: /etc/init.d/nginx
+    owner: root
+    group: root
+    mode: 0755
+  notify: restart nginx
+
+# TODO: 別ファイルにする
+- name: Set nginx configuration file
+  template:
+    src: nginx.conf.j2
+    dest: "{{install_dir}}/conf/nginx.conf"
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart nginx
+
+- name: Register nginx
+  service:
+    name:    nginx
+    enabled: yes
