@@ -1,3 +1,5 @@
 # VPS
 
-http://hrysd.org
+```shell
+$ ansible-playbook -i hosts ansible/web.yml
+```
