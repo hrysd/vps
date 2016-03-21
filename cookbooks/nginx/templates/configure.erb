@@ -1,0 +1,13 @@
+#!/bin/sh
+
+./configure \
+  --user=nginx \
+  --group=nginx \
+  --pid-path=/var/run/nginx.pid \
+  --lock-path=/var/lock/nginx.lock \
+  --error-log-path=/var/log/nginx/error.log \
+  --http-log-path=/var/log/nginx/access.log \
+  --with-http_realip_module \
+  --with-http_gunzip_module \
+  --with-http_gzip_static_module \
+  --with-http_ssl_module

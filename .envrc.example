@@ -1,0 +1,3 @@
+export USER_PASSWORD=
+export PASSWORD_SALT=
+export SSH_PORT=

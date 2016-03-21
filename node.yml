@@ -1,0 +1,5 @@
+users:
+  - hrysd
+
+nginx:
+  version: 1.9.12
