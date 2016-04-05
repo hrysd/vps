@@ -7,39 +7,40 @@
   openssl
   libssl-dev
 ).each do |dependency|
-  pacakge dependency
+  package dependency
 end
 
-execute 'get nginx-build binary' do
-  cwd '/tmp'
-
-  command 'wget https://github.com/cubicdaiya/nginx-build/releases/download/v0.7.2/nginx-build-linux-amd64-0.7.2.tar.gz'
-
-  not_if 'test -e /usr/local/bin/nginx-build'
+user 'nginx' do
+  shell '/bin/false'
 end
 
-execute 'tar zxvf nginx-build-linux-amd64-0.7.2.tar.gz' do
-  cwd '/tmp'
+group 'nginx'
 
-  not_if 'test -e /usr/local/bin/nginx-build'
-end
-
-execute 'mv nginx-build /usr/local/bin' do
-  cwd '/tmp'
-
-  not_if 'test -e /usr/local/bin/nginx-build'
+execute "add nginx to group" do
+  command "gpasswd -a nginx nginx"
 end
 
 nginx_version = node['nginx']['version']
 
-execute "nginx-build -d /usr/local/src -v #{nginx_version}"
+execute "nginx-build -d /usr/local/src -v #{nginx_version}" do
+  not_if 'test -d /usr/local/nginx'
+end
 
 execute 'make install' do
   cwd "/usr/local/src/nginx/#{nginx_version}/nginx-#{nginx_version}"
 end
 
-remote_file '/lib/systemd/system/nginx.service'
+remote_file '/lib/systemd/system/nginx.service' do
+  mode  '0644'
+  owner 'root'
+  group 'root'
+end
+
+remote_file '/usr/local/nginx/conf/nginx.conf' do
+  mode  '0644'
+  owner 'root'
+end
 
 service 'nginx' do
-  action [:enable, :start]
+  action [:reload, :enable, :start]
 end

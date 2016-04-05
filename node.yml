@@ -1,5 +1,6 @@
 users:
-  - hrysd
+  - name: hrysd
+    group: developers
 
 nginx:
   version: 1.9.12
