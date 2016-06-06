@@ -37,8 +37,8 @@
     --prefix={{source_dir}}
     --user={{user}}
     --group={{group}}
-    --pid-path=/var/run/nginx.pid
-    --lock-path=/var/lock/nginx.lock
+    --pid-path={{pid_path}}
+    --lock-path={{lock_path}}
     --error-log-path={{log_dir}}/error.log
     --http-log-path={{log_dir}}/access.log
     --with-http_realip_module

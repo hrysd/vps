@@ -11,3 +11,6 @@ install_dir: /usr/local/nginx
 
 log_dir: /var/log/nginx
 tmp_dir: /tmp/nginx-{{version}}
+
+pid_path: /var/run/nginx.pid
+lock_path: /var/lock/nginx.lock
