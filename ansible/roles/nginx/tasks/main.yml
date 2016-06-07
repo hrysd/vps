@@ -80,6 +80,11 @@
     mode: 0644
   notify: restart nginx
 
+- name: Make dhparam
+  command: openssl dhparam 2048 -out {{dhparam_path}}
+  args:
+    creates: "{{dhparam_path}}"
+
 - name: Register nginx
   service:
     name:    nginx
