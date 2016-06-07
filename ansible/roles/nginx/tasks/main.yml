@@ -3,6 +3,7 @@
   apt:
     name: "{{item}}"
   with_items:
+    - build-essential
     - libpcre3
     - libpcre3-dev
     - zlib1g
@@ -60,10 +61,10 @@
     state: link
     force: yes
 
-- name: Set init script
+- name: Set unit file
   template:
-    src: nginx.init.j2
-    dest: /etc/init.d/nginx
+    src: nginx.service.j2
+    dest: /etc/systemd/system/nginx.service
     owner: root
     group: root
     mode: 0755
